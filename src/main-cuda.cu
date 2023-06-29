@@ -36,6 +36,7 @@ int main(int argc, char** argv) {
   float *diff_array, *error_array;
   size_t array_size = num_elements * num_elements * sizeof(float);
 
+  // Allocate memory on the host/device
   checkCudaErrors(cudaMallocManaged(&old_solution, array_size));
   checkCudaErrors(cudaMallocManaged(&new_solution, array_size));
   checkCudaErrors(cudaMallocManaged(&diff_array, array_size));
@@ -56,9 +57,10 @@ int main(int argc, char** argv) {
     new_solution[(i + 1) * num_elements - 1] = old_solution[(i + 1) * num_elements - 1];
   }
 
-  // Jacobi iterations
-  float error = 10.0f; // Random initial value
-  int iterations = 0;
+  // Perform Jacobi iterations until we either have low enough error or too
+  // many iterations
+  auto error = 10.0f; // Random initial value
+  auto iterations = 0;
   while (error > max_error && iterations < max_iter) {
     error = 0.0f;
     gpu::jacobi<<<dim3(32, 32, 1), dim3(32, 32, 1)>>>(new_solution, old_solution, num_elements);
