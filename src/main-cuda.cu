@@ -22,7 +22,6 @@ int main(int argc, char** argv) {
   const auto max_iter = 10000;
   const auto max_error = 0.01f;
   srand(12345);
-  std::cout << "Number of elements: " << num_elements << std::endl;
 
   // Memory allocations
   float *old_solution, *new_solution;
@@ -50,10 +49,11 @@ int main(int argc, char** argv) {
     new_solution[(i + 1) * num_elements - 1] = old_solution[(i + 1) * num_elements - 1];
   }
 
-  // Perform Jacobi iterations until we either have low enough error or too
-  // many iterations
   auto error = 10.0f; // Random initial value
   auto iterations = 0;
+
+  // Perform Jacobi iterations until we either have low enough error or too
+  // many iterations
   while (error > max_error && iterations < max_iter) {
     error = 0.0f;
     gpu::jacobi<<<dim3(32, 32, 1), dim3(32, 32, 1)>>>(new_solution, old_solution, num_elements);
@@ -72,8 +72,7 @@ int main(int argc, char** argv) {
   auto finish = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::seconds>(finish - start);
 
-  std::cout << "Solution value at [20][20]: " << old_solution[20 + num_elements * 20] << std::endl;
-  std::cout << "New solution value at [20][20]: " << new_solution[20 + num_elements * 20] << std::endl;
+  std::cout << "Number of elements: " << num_elements << std::endl;
   std::cout << "Number of iterations: " << iterations << std::endl;
   std::cout << "Time taken: " << duration.count() << " seconds" << std::endl;
 
